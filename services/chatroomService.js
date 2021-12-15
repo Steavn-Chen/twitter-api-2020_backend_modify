@@ -1,8 +1,5 @@
 const db = require('../models')
-const Tweet = db.Tweet
 const Reply = db.Reply
-const User = db.User
-const Like = db.Like
 const helpers = require('../_helpers')
 
 let chatroomService = {

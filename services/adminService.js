@@ -41,7 +41,6 @@ const adminService = {
   getUser: (req, res, callback) => {
     return User.findByPk(req.params.id, { include: [{ model: User, as: 'Followers' }, { model: User, as: 'Followings' }, Like, Tweet] })
       .then(user => {
-        // console.log(user[0])
         const followersCount = user.Followers.length
         const followingsCount = user.Followings.length
         const tweetsCount = Tweet.length
@@ -52,12 +51,14 @@ const adminService = {
       })
   },
   getTweets: (req, res, callback) => {
-    return Tweet.findAll({ include: [Reply, Like, User] })
-      .then(tweets => {
-        callback({
-          tweets: tweets
-        })
-      })
+    return Tweet.findAll({
+      include: [Reply, Like, User],
+      order: [["createdAt", "DESC"]],
+    }).then((tweets) => {
+      callback({
+        tweets: tweets,
+      });
+    });
   },
   deleteTweet: (req, res, callback) => {
     return Tweet.findByPk(req.params.id, { include: [Reply, Like] })

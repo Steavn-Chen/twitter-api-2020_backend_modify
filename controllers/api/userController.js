@@ -1,14 +1,9 @@
 const bcrypt = require('bcryptjs')
-const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
-const helpers = require('../../_helpers')
 const db = require('../../models')
 const User = db.User
 
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
-const ExtractJwt = passportJWT.ExtractJwt
-const JwtStrategy = passportJWT.Strategy
 
 const userService = require('../../services/userService')
 
@@ -51,6 +46,7 @@ let userController = {
       })
     })
   },
+ 
   signUp: (req, res) => {
     // confirm password
     if (req.body.checkPassword !== req.body.password) {
@@ -71,6 +67,7 @@ let userController = {
             name: req.body.name,
             email: req.body.email,
             account: req.body.account,
+            role: 'user',
             password: bcrypt.hashSync(
               req.body.password,
               bcrypt.genSaltSync(10),
@@ -130,10 +127,6 @@ let userController = {
   },
   getUserLikes: (req, res) => {
     userService.getUserLikes(req, res, (data) => {
-      console.log(data,'data')
-      if (!data) {
-        return res.json({ status: "error", message: "信箱重覆" });
-      }
       return res.json(data);
     });
   },

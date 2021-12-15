@@ -11,9 +11,6 @@ const replyController = {
       }).then((reply) => {
         return res.redirect("back")
       })
-  //   replyService.postReply(req, res, (data) => {
-  //     return res.json(data);
-  //   });
   },
   getReplies: (req, res) => {
     replyService.getReplies(req, res, (data) => {

@@ -1,6 +1,4 @@
-const db = require('../../models')
 const tweetService = require('../../services/tweetService')
-const helpers = require('../../_helpers')
 
 const tweetController = {
   postTweet: (req, res) => {

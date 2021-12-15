@@ -117,8 +117,9 @@ router.put(
   router.put(
     "/users/:id/revise",
     authenticated,
+    authenticatedUser,
     userController.reviseUser
-    );
+  );
 
 //  查詢user的所有推文
 router.get(
@@ -139,6 +140,7 @@ router.get(
 router.get(
   "/users/:userId/replied_tweets",
   authenticated,
+  authenticatedUser,
   userController.getUserReplies
 );
 

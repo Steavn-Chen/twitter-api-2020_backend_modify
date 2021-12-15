@@ -1,15 +1,7 @@
 const bcrypt = require('bcryptjs')
-const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
 const helpers = require('../_helpers')
-const { Op } = require('sequelize')
-const fs = require('fs')
 const db = require('../models')
 const User = db.User
-const Like = db.Like
-const Tweet = db.Tweet
-const Reply = db.Reply
-const Followship = db.Followship
 
 
 const userService = require("../services/userService");
@@ -18,6 +10,7 @@ const userController = {
   signUpPage: (req, res) => {
     return res.render("signup");
   },
+
   signUp: (req, res) => {
     // confirm password
     if (req.body.checkPassword !== req.body.password) {
@@ -57,6 +50,7 @@ const userController = {
   signInPage: (req, res) => {
     return res.render("signin");
   },
+
   signIn: (req, res) => {
     req.flash("success_messages", "成功登入！");
     res.redirect("/tweets");
@@ -108,12 +102,11 @@ const userController = {
   },
   getUserTweets: (req, res) => {
     userService.getUserTweets(req, res, (data) => {
-       if (data["status"] === "error") {
-         req.flash("error_messages", data["message"]);
-         return res.redirect("back");
-       }
-       return res.render("userTweets", data);
-      // return res.render("userTweets", data);
+      if (data["status"] === "error") {
+        req.flash("error_messages", data["message"]);
+        return res.redirect("back");
+      }
+      return res.render("userTweets", data);
     });
   },
   getUserReplies: (req, res) => {
@@ -123,7 +116,6 @@ const userController = {
         return res.redirect("back");
       }
       return res.render("userReplies", data);
-      // return res.render("userReplies", data);
     });
   },
   getUserLikes: (req, res) => {
@@ -133,7 +125,6 @@ const userController = {
         return res.redirect("back");
       }
       return res.render("userLikeTweets", data);
-      // return res.render("userLikeTweets", data);
     });
   },
   addLike: (req, res) => {
@@ -154,22 +145,6 @@ const userController = {
   removeFollowing: (req, res) => {
     userService.removeFollowing(req, res, (data) => {
       return res.redirect("back");
-    });
-  },
-  putUser2: (req, res) => {
-    userService.putUser(req, res, (data) => {
-      if (data["status"] === "error") {
-        req.flash("error_messages", data["message"]);
-        return res.redirect("back");
-      }
-      req.flash("success_messages", data["message"]);
-      return res.redirect(`/users/${req.params.id}`);
-    });
-  },
-  // 測試
-  getUserLikesTweet: (req, res) => {
-    userService.getUserLikesTweet(req, res, (data) => {
-      return res.render("userLikeTweets", data);
     });
   },
 };

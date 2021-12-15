@@ -1,4 +1,3 @@
-const db = require('../../models')
 const replyService = require('../../services/replyService.js')
 
 let replyController = {

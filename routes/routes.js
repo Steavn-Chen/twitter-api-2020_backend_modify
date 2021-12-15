@@ -83,8 +83,6 @@ router.get('/users/:userId/tweets', authenticated, upload.fields([{ name: 'cover
 router.get('/users/:userId/replied_tweets', authenticated, upload.fields([{ name: 'cover', maxCount: 1 }, { name:'avatar', maxCount: 1 }]), userController.getUserReplies)
 // 查詢user的所有likes的推文
 router.get('/users/:userId/likes', authenticated, userController.getUserLikes)
-router.get('/users/:userId/likesTweet', authenticated, userController.getUserLikesTweet)
-
 
 //新增一位追蹤者
 router.post('/followships/:id', authenticated, userController.addFollowing) 
