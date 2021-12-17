@@ -53,20 +53,28 @@ const tweetService = {
   getTweet: (req, res, callback) => {
     return Tweet.findOne({
       where: { id: req.params.id },
-      include: [User, { model: Like }, { model: Reply, include: [User] }],
+      attributes: { exclude: ["updatedAt"] } ,
+      include: [
+        { model: User,  attributes: {
+          exclude: ["password", "email", "createdAt", "updatedAt", 'cover'],
+        },},
+        { model: Like, attributes: ['id', 'isLike', 'UserId'] },
+        { model: Reply,  attributes: ['id', 'comment', 'createdAt'],
+         include: [ { model: User, attributes: ['id', 'avatar', 'account', 'name'] } ] 
+        }],
     }).then((tweet) => {
       if (!tweet) {
-        return callback({ status: 'error', message: '此推文不存在' })
+        tweet = []
+        return callback(tweet)
       }  
       let tweetReplyCount = tweet.Replies.length ? tweet.Replies.length : 0
-      let tweetLikeCount = tweet.Likes.filter((d) => d.isLike === true).length;
-      let tweetLike = tweet.Likes.filter((d, index) => d.isLike === true);
-      tweetLike = tweetLike.map((d) => d.UserId).includes(helpers.getUser(req).id)
+      let tweetLikeCount = tweet.Likes.length || 0
+      let isLike = tweet.Likes.map((d) => d.UserId).includes(helpers.getUser(req).id) || false
       tweet = {
         ...tweet.dataValues,
         tweetReplyCount,
         tweetLikeCount,
-        isLike: tweetLike,
+        isLike: isLike
       };
       return callback(tweet)
     });

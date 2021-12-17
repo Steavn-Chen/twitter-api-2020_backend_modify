@@ -239,7 +239,11 @@ const userService = {
   },
   getTopUser: (req, res, callback) => {
     return User.findAll({
-      include: [{ model: User, as: "Followers" }],
+      attributes: {
+          exclude: ["password", "email", "createdAt", "updatedAt", "cover", 'introduction'],
+        },
+      include: [{ model: User, as: "Followers", attributes: ['id']
+       }],
     }).then((users) => {
       users = users.map((user) => ({
         ...user.dataValues,
@@ -469,7 +473,6 @@ const userService = {
           password: bcrypt.hashSync(password, bcrypt.genSaltSync(10), null),
         })
         .then((user) => {
-          console.log("也己經編輯了");
           return callback({
             status: "success",
             message: "使用者資料編輯成功。",
