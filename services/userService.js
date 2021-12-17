@@ -340,22 +340,30 @@ const userService = {
   // },
 
   removeLike: (req, res, callback) => {
-    return Like.findOne({
+    return Like.destroy({ 
       where: {
         UserId: helpers.getUser(req).id,
         TweetId: req.params.id,
       },
-    })
-      .then((like) => {
-        if (!like.isLike) {
-          return callback({ status: "success", message: "取消喜歡推文" });
-        } else {
-          like.destroy().then((like) => {
-            return callback({ status: "success,", message: "取消喜歡推文" });
-          });
-        }
-      })
-      .catch((err) => console.log(err));
+    }).then(like => {
+      return callback({ status: "success", message: "取消喜歡推文" });
+    }).catch(err => console.log(err))
+    // return Like.findOne({
+    //   where: {
+    //     UserId: helpers.getUser(req).id,
+    //     TweetId: req.params.id,
+    //   },
+    // })
+    //   .then((like) => {
+    //     if (!like.isLike) {
+          // return callback({ status: "success", message: "取消喜歡推文" });
+    //     } else {
+    //       like.destroy().then((like) => {
+    //         return callback({ status: "success,", message: "取消喜歡推文" });
+    //       });
+    //     }
+    //   })
+    //   .catch((err) => console.log(err));
   },
 
   profileUser: async (req, res, callback) => {
