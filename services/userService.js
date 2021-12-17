@@ -290,35 +290,35 @@ const userService = {
       callback({ status: "success", message: "all replies killed" });
     });
   },
-  addLike: (req, res, callback) => {
-    Like.findOne({
-      where: {
-        UserId: helpers.getUser(req).id,
-        TweetId: req.params.id,
-      },
-    })
-      .then((like) => {
-        if (!like) {
-          return Like.create({
-            UserId: helpers.getUser(req).id,
-            TweetId: req.params.id,
-            isLike: true,
-          }).then((like) => {
-            return callback({ status: "success", message: "喜歡此筆推文。" });
-          });
-        }
-        if (like.isLike === false) {
-          return like.update({ ...like, isLike: !like.isLike }).then((like) => {
-            return callback({ status: "success", message: "喜歡此筆推文。" });
-          });
-        }
-        return callback({
-          status: "error",
-          message: "錯誤 ! 此筆推文己喜歡。",
-        });
-      })
-      .catch((err) => console.log(err));
-  },
+  // addLike: (req, res, callback) => {
+  //   Like.findOne({
+  //     where: {
+  //       UserId: helpers.getUser(req).id,
+  //       TweetId: req.params.id,
+  //     },
+  //   })
+  //     .then((like) => {
+  //       if (!like) {
+  //         return Like.create({
+  //           UserId: helpers.getUser(req).id,
+  //           TweetId: req.params.id,
+  //           isLike: true,
+  //         }).then((like) => {
+  //           return callback({ status: "success", message: "喜歡此筆推文。" });
+  //         });
+  //       }
+  //       if (like.isLike === false) {
+  //         return like.update({ ...like, isLike: !like.isLike }).then((like) => {
+  //           return callback({ status: "success", message: "喜歡此筆推文。" });
+  //         });
+  //       }
+  //       return callback({
+  //         status: "error",
+  //         message: "錯誤 ! 此筆推文己喜歡。",
+  //       });
+  //     })
+  //     .catch((err) => console.log(err));
+  // },
   removeLike: (req, res, callback) => {
     Like.findOne({
       where: {
@@ -350,23 +350,23 @@ const userService = {
       })
       .catch((err) => console.log(err));
   },
-  // addLike: (req, res, callback) => {
-  //   return Like.findOrCreate({
-  //     where: {
-  //       UserId: helpers.getUser(req).id,
-  //       TweetId: req.params.id,
-  //       isLike: true,
-  //     },
-  //     default: {
-  //       UserId: helpers.getUser(req).id,
-  //       TweetId: req.params.id,
-  //     },
-  //   })
-  //     .then(([like, boolean]) => {
-  //       return callback({ status: "success", message: "喜歡此筆推文" });
-  //     })
-  //     .catch((err) => console.log(err));
-  // },
+  addLike: (req, res, callback) => {
+    return Like.findOrCreate({
+      where: {
+        UserId: helpers.getUser(req).id,
+        TweetId: req.params.id,
+        isLike: true,
+      },
+      default: {
+        UserId: helpers.getUser(req).id,
+        TweetId: req.params.id,
+      },
+    })
+      .then(([like, boolean]) => {
+        return callback({ status: "success", message: "喜歡此筆推文" });
+      })
+      .catch((err) => console.log(err));
+  },
   // removeLike: (req, res, callback) => {
   //   return Like.findOne({
   //     where: {
