@@ -187,16 +187,23 @@ const userService = {
       include: [
         {
           model: User,
-          as: "Followers",
+          as: "Followers", attributes: {
+          exclude: ["password", "email", "createdAt", "updatedAt", 'cover'],
+          },
         },
       ],
     }).then((followers) => {
-      followers = followers.Followers.map((d, index) => {
-        let followerId;
-        if (!d.Followship.followerId) {
-          followerId = false;
-        }
-        followerId = d.Followship.followerId;
+      if (!followers) {
+        followers = []
+        return callback(followers)
+      }
+      followers = followers.Followers.map((d) => {
+        let followerId = d.Followship.followerId || false
+        // let followerId;
+        // if (!d.Followship.followerId) {
+        //   followerId = false;
+        // }
+        // followerId = d.Followship.followerId;
         return { ...d.dataValues, followerId };
       });
       return callback(followers);
@@ -208,15 +215,23 @@ const userService = {
         {
           model: User,
           as: "Followings",
+          attributes: {
+            exclude: ["password", "email", "createdAt", "updatedAt", "cover"],
+          },
         },
       ],
     }).then((followings) => {
+      if (!followings) {
+        followers = [];
+        return callback(followings);
+      }
       followings = followings.Followings.map((d, index) => {
-        let followingId;
-        if (!d.Followship.followingId) {
-          followingId = false;
-        }
-        followingId = d.Followship.followingId;
+        let followingId = d.Followship.followingId || false
+        // let followingId;
+        // if (!d.Followship.followingId) {
+        //   followingId = false;
+        // }
+        // followingId = d.Followship.followingId;
         return { ...d.dataValues, followingId };
       });
       return callback(followings);
