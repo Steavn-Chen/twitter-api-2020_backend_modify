@@ -347,7 +347,7 @@ const userService = {
       },
     })
       .then((like) => {
-        if (!like) {
+        if (!like.isLike) {
           return callback({ status: "success", message: "取消喜歡推文" });
         } else {
           like.destroy().then((like) => {
