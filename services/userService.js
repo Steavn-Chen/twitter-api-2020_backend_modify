@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const imgur = require("imgur-node-api");
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
-const { Op } = require('sequelize')
+const { Op, Sequelize } = require("sequelize");
 const helpers = require("../_helpers");
 const db = require("../models");
 const Tweet = db.Tweet;
@@ -9,6 +9,9 @@ const Reply = db.Reply;
 const User = db.User;
 const Like = db.Like;
 const Followship = db.Followship;
+const sequelize = new Sequelize("`ac_twitter_workspace`", "root", "password", {
+  dialect: "mysql",
+});
 
 const userService = {
   getUser: (req, res, callback) => {
@@ -17,17 +20,31 @@ const userService = {
         where: {
           id: req.params.id,
         },
+        attributes: {
+          exclude: ["password", "email", "createdAt", "updatedAt"],
+        },      
         include: [
-          { model: User, as: "Followers" },
-          { model: User, as: "Followings" },
+          {
+            model: User,
+            as: "Followers",
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: "Followings",
+            attributes: {
+              exclude: ["name", "avatar",'account','introduction','email','role','cover', 'password', "createdAt", "updatedAt", 'Followship'],
+            },
+
+          },
         ],
       }),
-      Tweet.findAll({
+      Tweet.count({
         where: {
           UserId: req.params.id,
         },
       }),
-    ]).then(([user, tweets]) => {
+    ]).then(([user, tweetsCount]) => {
       user = {
         ...user.dataValues,
         FollowersCount: user.Followers.length,
@@ -35,10 +52,10 @@ const userService = {
         isFollower: user.Followers.map((d) => d.id).includes(
           helpers.getUser(req).id
         ),
-        tweetsCount: tweets.length,
-      };
+        tweetsCount: tweetsCount,
+      }
       return callback(user);
-    });
+    })
   },
   addFollowing: (req, res, callback) => {
     return Followship.create({
@@ -225,94 +242,26 @@ const userService = {
         TweetId: req.params.id,
       },
     }).then(([like, boolean]) => {
-      console.log('like',like)
-      console.log('boolean',boolean)
       return callback({ status: 'success', message: '喜歡此筆推文'})
     }).catch(err => console.log(err))
-    // Like.findOne({
-    //   where: {
-    //     UserId: helpers.getUser(req).id,
-    //     TweetId: req.params.id,
-    //   },
-    // })
-    //   .then((like) => {
-    //     if (!like) {
-    //       return Like.create({
-    //         UserId: helpers.getUser(req).id,
-    //         TweetId: req.params.id,
-    //         isLike: true,
-    //       }).then((like) => {
-    //         return callback({ status: "success", message: "喜歡此筆推文。" });
-    //       });
-    //     }
-    //     if (like.isLike === false) {
-    //       return like.update({ ...like, isLike: !like.isLike }).then((like) => {
-    //         return callback({ status: "success", message: "喜歡此筆推文。" });
-    //       });
-    //     }
-    //     return callback({
-    //       status: "error",
-    //       message: "錯誤 ! 此筆推文己喜歡。",
-    //     });
-    //   })
-    //   .catch((err) => console.log(err));
   },
   removeLike: (req, res, callback) => {
     Like.findOne({
       where: {
         UserId: helpers.getUser(req).id,
         TweetId: req.params.id,
-        isLike: true
       },
-      // default: {
-      //   UserId: helpers.getUser(req).id,
-      //   TweetId: req.params.id,
-      // },
     })
-      // .then(([a, b]) => {
       .then(like => {
-        // console.log("a", a);
-        // console.log("b", b);
         if (!like) {
-          // return a.destroy().then((like) => {
-            return callback({ status: "success", message: "刪除此筆推文" });
-          // });
+          return callback({ status: "success", message: "刪除此筆推文" });
         } else {
           like.destroy().then(like => {
             return callback({ status: 'success,', message: '刪除此筆推文'})
           })
         }
       })
-      .catch((err) => console.log(err));
-    // Like.findOne({
-    //   where: {
-    //     UserId: helpers.getUser(req).id,
-    //     TweetId: req.params.id,
-    //   },
-    // })
-    //   .then((like) => {
-    //     if (!like) {
-    //       return Like.create({
-    //         UserId: helpers.getUser(req).id,
-    //         TweetId: req.params.id,
-    //         isLike: false,
-    //       }).then((like) => {
-    //         return callback({ status: "success", message: "此筆推文取消喜歡" });
-    //       });
-    //     } else if (like.isLike === true) {
-    //       return like.destroy().then((like) => {
-    //         return callback({ status: "success", message: "此筆推文取消喜歡" });
-    //       });
-    //     } else {
-    //       return like.destroy().then((like) => {
-    //         return callback({
-    //           status: "error",
-    //           message: "錯誤 ! 此筆推文己取消喜歡。",
-    //         });
-    //       });
-    //     }
-    //   })
-    //   .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
   },
 
   profileUser: async (req, res, callback) => {
