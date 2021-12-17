@@ -1,6 +1,4 @@
-const db = require('../../models')
 const adminService = require("../../services/adminService")
-
 
 let adminController = {
   getUsers: (req, res) => {

@@ -49,11 +49,6 @@ router.post('/tweets/:id/like', authenticated, userController.addLike)
 //  對特定一筆推文取消喜歡
 router.post('/tweets/:id/unlike', authenticated, userController.removeLike)
 
-// 連到 /admin 頁面就轉到 /admin/tweets
-router.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/tweets'))
-
-// 在 /admin/tweets 底下則交給 adminController.getTweets 處理
-router.get('/admin/tweets', adminController.getTweets)
 
 router.get('/signup', userController.signUpPage)
 router.post('/signup', userController.signUp)
@@ -64,8 +59,6 @@ router.get('/logout', userController.logout)
 
 //  使用者個人資料頁
 router.get("/users/:id/profile", authenticated, userController.profileUser)
-
-// router.put("/users/:id/revise", authenticated, upload.fields([{ name: 'cover', maxCount: 1 }, { name:'avatar', maxCount: 1 }]), userController.reviseUser);
 
 router.put("/users/:id/revise", authenticated, userController.reviseUser);
 router.get('/users/:id', authenticated, userController.getUser)
@@ -89,8 +82,30 @@ router.post('/followships/:id', authenticated, userController.addFollowing)
 //新增一位追蹤者
 router.delete('/followships/:id', authenticated, userController.removeFollowing)
 
-// router.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/tweets'))
-// router.get('/admin/tweets', authenticatedAdmin, adminController.getTweets)
+//管理者可以看見站內所有的使用者
+router.get("/admin/users", authenticated,authenticatedAdmin, adminController.getUsers
+)
+//管理者可以看見站內所有的使用者
+router.get(
+  "/admin/users/:id",
+  authenticated,
+  authenticatedAdmin,
+  adminController.getUser
+);
+//管理者可以看見站內所有的推文
+router.get(
+  "/admin/tweets",
+  authenticated,
+  authenticatedAdmin,
+  adminController.getTweets
+);
+//管理者可以刪除特定推文
+router.delete(
+  "/admin/tweets/:id",
+  authenticated,
+  authenticatedAdmin,
+  adminController.deleteTweet
+);
 
 //chatroom
 router.get('/chatroom', )
