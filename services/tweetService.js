@@ -23,8 +23,14 @@ const tweetService = {
   },
   getTweets: (req, res, callback) => {
     Tweet.findAll({
-      include: [User, { model: Reply }, { model: Like }],
+      attributes: { exclude: ["updatedAt"] },
       order: [["createdAt", "DESC"]],
+      include: [
+        { model: User, attributes: { exclude: ["updatedAt", 'cover', 'password', 'email', 'createdAt', 'introduction'] } },
+        // User,
+        { model: Reply, attributes: ['id'] },
+        { model: Like },
+      ],
     }).then((tweets) => {
       tweets = tweets.map((d) => {
         let tweetLikeCount = d.dataValues.Likes.filter(
@@ -48,20 +54,24 @@ const tweetService = {
         return d;
       });
       return callback(tweets);
-      })
+    });
   },
   getTweet: (req, res, callback) => {
     return Tweet.findOne({
       where: { id: req.params.id },
-      attributes: { exclude: ["updatedAt"] } ,
+    
+      attributes: { exclude: ["updatedAt"] },
+ 
+      order:[[Reply,'createdAt', 'DESC']],
       include: [
         { model: User,  attributes: {
           exclude: ["password", "email", "createdAt", "updatedAt", 'cover'],
         },},
         { model: Like, attributes: ['id', 'isLike', 'UserId'] },
-        { model: Reply,  attributes: ['id', 'comment', 'createdAt'],
-         include: [ { model: User, attributes: ['id', 'avatar', 'account', 'name'] } ] 
-        }],
+        { model: Reply,  attributes: ['id', 'comment', "createdAt"],
+          include: [ { model: User, attributes: ['id', 'avatar', 'account', 'name'] } ] 
+        }
+      ],
     }).then((tweet) => {
       if (!tweet) {
         tweet = []
