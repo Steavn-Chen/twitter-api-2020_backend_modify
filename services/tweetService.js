@@ -27,24 +27,18 @@ const tweetService = {
       order: [["createdAt", "DESC"]],
       include: [
         { model: User, attributes: { exclude: ["updatedAt", 'cover', 'password', 'email', 'createdAt', 'introduction'] } },
-        // User,
         { model: Reply, attributes: ['id'] },
-        { model: Like },
+        { model: Like, attributes: ['id','UserId'] },
       ],
     }).then((tweets) => {
+      if (!tweets) {
+        tweets = []
+        return callback(tweets)
+      }
       tweets = tweets.map((d) => {
-        let tweetLikeCount = d.dataValues.Likes.filter(
-          (d) => d.isLike === true
-        ).length;
-        let tweetReplyCount = d.dataValues.Replies.map((d) => d.id).length;
-        let userIsLike = d.dataValues.Likes.find(
-          (d) => d.UserId === helpers.getUser(req).id
-        );
-        if (!userIsLike) {
-          userIsLike = false;
-        } else {
-          userIsLike = userIsLike.isLike;
-        }
+        let tweetLikeCount = d.dataValues.Likes.length;
+        let tweetReplyCount = d.dataValues.Replies.length;
+        let userIsLike = d.dataValues.Likes.some(d => d.UserId === helpers.getUser(req).id)
         d = {
           ...d.dataValues,
           tweetReplyCount,
@@ -58,10 +52,8 @@ const tweetService = {
   },
   getTweet: (req, res, callback) => {
     return Tweet.findOne({
-      where: { id: req.params.id },
-    
+      where: { id: req.params.id },   
       attributes: { exclude: ["updatedAt"] },
- 
       order:[[Reply,'createdAt', 'DESC']],
       include: [
         { model: User,  attributes: {
