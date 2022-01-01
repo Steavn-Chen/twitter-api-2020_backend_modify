@@ -1,8 +1,3 @@
-const bcrypt = require("bcryptjs");
-const imgur = require("imgur-node-api");
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
-const { Op } = require('sequelize')
-const helpers = require("../_helpers");
 const db = require("../models");
 const Tweet = db.Tweet;
 const Reply = db.Reply;
@@ -17,43 +12,57 @@ const adminService = {
       raw: true,
       nest: true,
       attributes: [
-        'id',
-        'name',
-        'account',
-        'avatar',
-        'cover',
-        [sequelize.literal('(SELECT COUNT(*) FROM Tweets WHERE Tweets.UserId = User.id)'), 'tweetCount'],
-        [sequelize.literal('(SELECT COUNT(*) FROM Likes WHERE Likes.UserId = User.id)'), 'likeCount'],
+        "id",
+        "name",
+        "account",
+        "avatar",
+        "cover",
         [
-          sequelize.literal('(SELECT COUNT(*) FROM Followships WHERE Followships.followingId = User.id)'),
-          'followingCount'
+          sequelize.literal(
+            "(SELECT COUNT(*) FROM Tweets WHERE Tweets.UserId = User.id)"
+          ),
+          "tweetCount",
         ],
         [
-          sequelize.literal('(SELECT COUNT(*) FROM Followships WHERE Followships.followerId = User.id)'),
-          'followerCount'
-        ]
-      ]
-    }).then(users => {
-      users = users.sort((a, b) => b.tweetCount - a.tweetCount)
-      return callback(users)
-    })
-  },
-  getUser: (req, res, callback) => {
-    return User.findByPk(req.params.id, { include: [{ model: User, as: 'Followers' }, { model: User, as: 'Followings' }, Like, Tweet] })
-      .then(user => {
-        const followersCount = user.Followers.length
-        const followingsCount = user.Followings.length
-        const tweetsCount = Tweet.length
-        const likeCount = Like.length
-        callback({
-          user: user, followersCount: followersCount, followingsCount: followingsCount, tweetsCount: tweetsCount, likeCount: likeCount
-        })
-      })
+          sequelize.literal(
+            "(SELECT COUNT(*) FROM Likes WHERE Likes.UserId = User.id)"
+          ),
+          "likeCount",
+        ],
+        [
+          sequelize.literal(
+            "(SELECT COUNT(*) FROM Followships WHERE Followships.followingId = User.id)"
+          ),
+          "followingCount",
+        ],
+        [
+          sequelize.literal(
+            "(SELECT COUNT(*) FROM Followships WHERE Followships.followerId = User.id)"
+          ),
+          "followerCount",
+        ],
+        [
+          // 注意下面的调用中的括号！
+          sequelize.literal(`(
+                    SELECT COUNT(*)
+                    FROM Tweets AS Tweet
+                    WHERE
+                      Tweet.UserId = User.id        
+                )`),
+          "tweetcount",
+        ],
+      ],
+      order: [[sequelize.literal("tweetCount"), "DESC"]],
+    }).then((users) => {
+      // users = users.sort((a, b) => b.tweetCount - a.tweetCount);
+      return callback(users);
+    });
   },
   getTweets: (req, res, callback) => {
     return Tweet.findAll({
-      include: [Reply, Like, User],
+      attributes: ['id', 'description', 'createdAt', 'UserId'],
       order: [["createdAt", "DESC"]],
+      include: [{ model: User, attributes: ['id', 'name', 'account', 'avatar', 'createdAt'] }],
     }).then((tweets) => {
       callback({
         tweets: tweets,

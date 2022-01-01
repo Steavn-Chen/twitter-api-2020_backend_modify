@@ -32,13 +32,13 @@ let replyService = {
         results = []
         return callback(results);
       } 
-      let tweetReplyCount = results.length || 0;
+      let tweetReplyCount = results.length || 0
       results = {
         results,
         tweetReplyCount
       };
       return callback(results);
-    });
+    })
   }
 }
 

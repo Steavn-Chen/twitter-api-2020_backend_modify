@@ -85,13 +85,6 @@ router.delete('/followships/:id', authenticated, userController.removeFollowing)
 //管理者可以看見站內所有的使用者
 router.get("/admin/users", authenticated,authenticatedAdmin, adminController.getUsers
 )
-//管理者可以看見站內所有的使用者
-router.get(
-  "/admin/users/:id",
-  authenticated,
-  authenticatedAdmin,
-  adminController.getUser
-);
 //管理者可以看見站內所有的推文
 router.get(
   "/admin/tweets",

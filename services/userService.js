@@ -1,17 +1,16 @@
 const bcrypt = require("bcryptjs");
-const imgur = require("imgur-node-api");
+const imgur = require("imgur-node-api") // 優化第一種解法
+// const imgur = require('imgur') //優化第二種解法
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
-const { Op, Sequelize } = require("sequelize");
+const { Op, sequelize } = require("sequelize");
 const helpers = require("../_helpers");
 const db = require("../models");
+const { ReadyForQueryMessage } = require("pg-protocol/dist/messages");
 const Tweet = db.Tweet;
 const Reply = db.Reply;
 const User = db.User;
 const Like = db.Like;
 const Followship = db.Followship;
-const sequelize = new Sequelize("`ac_twitter_workspace`", "root", "password", {
-  dialect: "mysql",
-});
 
 const userService = {
   getUser: (req, res, callback) => {
@@ -199,11 +198,6 @@ const userService = {
       }
       followers = followers.Followers.map((d) => {
         let followerId = d.Followship.followerId || false
-        // let followerId;
-        // if (!d.Followship.followerId) {
-        //   followerId = false;
-        // }
-        // followerId = d.Followship.followerId;
         return { ...d.dataValues, followerId };
       });
       return callback(followers);
@@ -227,11 +221,6 @@ const userService = {
       }
       followings = followings.Followings.map((d, index) => {
         let followingId = d.Followship.followingId || false
-        // let followingId;
-        // if (!d.Followship.followingId) {
-        //   followingId = false;
-        // }
-        // followingId = d.Followship.followingId;
         return { ...d.dataValues, followingId };
       });
       return callback(followings);
@@ -334,81 +323,51 @@ const userService = {
         User.findByPk(helpers.getUser(req).id),
       ]);
       const { files } = req;
-      imgur.setClientID(IMGUR_CLIENT_ID);
+      imgur.setClientID(IMGUR_CLIENT_ID) //優化第一種解法
+      // imgur.setClientId(IMGUR_CLIENT_ID) //優化第二種解法
       if (files) {
-        if (files.cover && !files.avatar) {
-          imgur.upload(files.cover[0].path, async (err, coverImg) => {
-            try {
-              if (err) console.log("Error: ", err);
-              let cover = await coverImg;
-              await user
-                .update({
-                  ...req.body,
-                  cover: cover.data.link,
-                })
-                .then((user) => {
-                  callback({
-                    status: "success",
-                    message: "使用者資料編輯成功。",
-                  });
-                });
-            } catch (e) {
-              console.warn(e);
-            }
-          });
-        } else if (!files.cover && files.avatar) {
-          imgur.upload(files.avatar[0].path, async (err, avatarImg) => {
-            if (err) console.log("Error: ", err);
-            let avatar = await avatarImg;
-            await user
-              .update({
-                ...req.body,
-                avatar: avatar.data.link,
-              })
-              .then((user) => {
-                callback({
-                  status: "success",
-                  message: "使用者資料編輯成功。",
-                });
-              });
-            try {
-            } catch (e) {
-              console.warn(e);
-            }
-          });
-        } else if (files.cover && files.avatar) {
-          imgur.upload(files.cover[0].path, async (err, coverImg) => {
-            if (err) console.log("Error: ", err);
-            imgur.upload(files.avatar[0].path, async (err, avatarImg) => {
-              try {
-                if (err) console.log("Error: ", err);
-                let cover = await coverImg;
-                let avatar = await avatarImg;
-                user
-                  .update({
-                    ...req.body,
-                    cover: cover.data.link,
-                    avatar: avatar.data.link,
-                  })
-                  .then((user) => {
-                    return callback({
-                      status: "success",
-                      message: "使用者資料編輯成功。",
-                    });
-                  });
-              } catch (e) {
-                console.warn(e);
-              }
+        // 優化第一種
+      imgur.upload(files.cover[0].path, (err, coverImg) => {
+        if (err) console.log("coverImgError: ", err);
+        imgur.upload(files.avatar[0].path, (err, avatarImg) => {
+          if (err) console.log("avatarImgError: ", err);
+          let cover =  files.cover ?  coverImg.data.link : false
+          let avatar = files.avatar ? avatarImg.data.link : false
+           user
+            .update({
+              ...req.body,
+              cover,
+              avatar
+            })
+            .then((user) => {
+              callback({ status: "success", message: "使用者編輯成功" });
             });
-          });
-        } else {
-          user.update(req.body).then(() => {
-            return callback({
-              status: "success",
-              message: "使用者資料編輯成功。",
-            });
-          });
-        }
+        })
+      })
+       // 優化第二種
+      //  if (files.cover) {
+      //    const coverImg = await imgur.uploadFile(files.cover[0].path)
+      //    cover = coverImg.link
+      //    req.body.cover = cover
+      //  }  
+      // if (files.avatar) {
+      //   const avatarImg = await imgur.uploadFile(files.avatar[0].path)
+      //   avatar = avatarImg.link
+      //   req.body.avatar = avatar
+      // }
+
+      // 優化第三種
+      // let cover =  files.cover ? await imgur.uploadFile(files.cover[0].path) : false
+      // let avatar =  files.avatar ? await imgur.uploadFile(files.avatar[0].path) : false
+
+      // await user.update({
+      //   ...req.body,
+      //   cover: cover.link,
+      //   avatar: avatar.link,
+      // }).then((user) => {
+      //       callback({ status: "success", message: "使用者編輯成功" });
+      //     });
+       
       } else {
         user.update(req.body).then(() => {
           return callback({
@@ -445,6 +404,7 @@ const userService = {
       }),
       User.findByPk(userId),
     ]).then(([usersEmail, usersAccount, user]) => {
+      console.log(usersEmail,usersAccount)
       const emailCheck = usersEmail.map((d) => d.email).includes(email);
       const accountCheck = usersAccount.map((d) => d.account).includes(account);
       if (!name || !email || !account || !password || !checkPassword) {
