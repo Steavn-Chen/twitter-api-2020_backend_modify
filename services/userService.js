@@ -25,26 +25,26 @@ const userService = {
           {
             model: User,
             as: "Followers",
-            attributes: ["id"],
+            // attributes: ["id"],
           },
           {
             model: User,
             as: "Followings",
-            attributes: {
-              exclude: [
-                "name",
-                "avatar",
-                "account",
-                "introduction",
-                "email",
-                "role",
-                "cover",
-                "password",
-                "createdAt",
-                "updatedAt",
-                "Followship",
-              ],
-            },
+            // attributes: {
+            //   exclude: [
+            //     "name",
+            //     "avatar",
+            //     "account",
+            //     "introduction",
+            //     "email",
+            //     "role",
+            //     "cover",
+            //     "password",
+            //     "createdAt",
+            //     "updatedAt",
+            //     "Followship",
+            //   ],
+            // },
           },
         ],
       }),
@@ -58,13 +58,13 @@ const userService = {
       console.log('tweetsCount', tweetsCount)
       user = {
         ...user.dataValues,
-        FollowersCount: user.dataValues.length || 0,
-        FollowingsCount: user.dataValues.length || 0,
+        FollowersCount: user.Followers.length,
+        FollowingsCount: user.Followings.length,
         isFollower: user.Followers.map((d) => d.id).includes(
           helpers.getUser(req).id
         ),
         tweetsCount: tweetsCount,
-      };
+      }
       console.log('@@@@@@@@@@@@')
       console.log('after', user)
       return callback(user);
