@@ -5,7 +5,6 @@ const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
 const { Op, sequelize } = require("sequelize");
 const helpers = require("../_helpers");
 const db = require("../models");
-const { ReadyForQueryMessage } = require("pg-protocol/dist/messages");
 const Tweet = db.Tweet;
 const Reply = db.Reply;
 const User = db.User;
@@ -182,49 +181,75 @@ const userService = {
     });
   },
   getFollowers: (req, res, callback) => {
-    return User.findByPk(req.params.id, {
-      include: [
-        {
-          model: User,
-          as: "Followers", attributes: {
-          exclude: ["password", "email", "createdAt", "updatedAt", 'cover'],
-          },
+    return Promise.all([
+      User.findByPk(req.params.id, {
+        attributes: {
+          exclude: ['password', 'email', 'createdAt', 'updatedAt', 'role', 'cover', 'account', 'avatar'],
         },
-      ],
-    }).then((followers) => {
+        include: [
+          {
+            model: User,
+            as: 'Followers',
+            attributes: ['id', 'avatar', 'name', 'introduction' ],
+          },
+        ],
+      }),
+      Tweet.count({
+        where: {
+          UserId: req.params.id,
+        },
+      }),
+    ]).then(([followers, tweetsCount]) => {
       if (!followers) {
         followers = []
         return callback(followers)
       }
-      followers = followers.Followers.map((d) => {
-        let followerId = d.Followship.followerId || false
-        return { ...d.dataValues, followerId };
-      });
-      return callback(followers);
-    });
+      followers = {
+        ...followers.dataValues,
+        tweetsCount: tweetsCount,
+      }
+      return callback(followers)
+    })
   },
   getFollowings: (req, res, callback) => {
-    return User.findByPk(req.params.id, {
-      include: [
-        {
-          model: User,
-          as: "Followings",
-          attributes: {
-            exclude: ["password", "email", "createdAt", "updatedAt", "cover"],
-          },
+    return Promise.all([
+      User.findByPk(req.params.id, {
+        attributes: {
+          exclude: [
+            'password',
+            'email',
+            'createdAt',
+            'updatedAt',
+            'role',
+            'cover',
+            'account',
+            'avatar',
+          ],
         },
-      ],
-    }).then((followings) => {
+        include: [
+          {
+            model: User,
+            as: 'Followings',
+            attributes: ['id', 'avatar', 'name', 'introduction'],
+          },
+        ],
+      }),
+      Tweet.count({
+        where: {
+          UserId: req.params.id,
+        },
+      }),
+    ]).then(([followings, tweetsCount]) => {
       if (!followings) {
-        followers = [];
-        return callback(followings);
+        followings = []
+        return callback(followings)
       }
-      followings = followings.Followings.map((d, index) => {
-        let followingId = d.Followship.followingId || false
-        return { ...d.dataValues, followingId };
-      });
-      return callback(followings);
-    });
+      followings = {
+        ...followings.dataValues,
+        tweetsCount: tweetsCount,
+      }
+      return callback(followings)
+    })
   },
   getTopUser: (req, res, callback) => {
     return User.findAll({

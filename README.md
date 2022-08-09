@@ -17,7 +17,7 @@ With Alphitter, you can do the followings
 
 1. Clone the repository
    ```
-   git clone -b master https://github.com/cschang07/twitter-api-2020.git
+   git clone -b master https://github.com/Steavn-Chen/twitter-api-2020
    ```
 2. Go to the file on your terminal
    ```

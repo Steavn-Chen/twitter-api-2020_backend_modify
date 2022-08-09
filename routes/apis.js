@@ -14,18 +14,21 @@ const replyController = require("../controllers/api/replyController");
 const adminController = require("../controllers/api/adminController");
 
 // const authenticated = passport.authenticate("jwt", { session: false });
-  const authenticated = (req, res, next) => {
-    passport.authenticate("jwt", { session: false }, (err, user) => {
-      if (!user) {
-        return res
-          .status(401)
-          .json({ status: "error", message: "token doesn't exist" });
-      }
-      req.user = user;
-      return next();
-    })(req, res, next);
-  }
+
+const authenticated = (req, res, next) => {
+  passport.authenticate("jwt", { session: false }, (err, user) => {
+    if (!user) {
+      return res
+        .status(401)
+        .json({ status: "error", message: "token doesn't exist" })
+    }
+    req.user = user
+    return next()
+  })(req, res, next)
+}
  const authenticatedUser = (req, res, next) => {
+  //  console.log('authenticatedUser', req.user)
+  //  console.log('authenticatedUser' ,helpers.getUser(req))
     if (helpers.getUser(req)) {
       if (helpers.getUser(req).role !== 'admin') {
         return next()
