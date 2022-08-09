@@ -54,15 +54,19 @@ const userService = {
         },
       }),
     ]).then(([user, tweetsCount]) => {
+      console.log('user', user)
+      console.log('tweetsCount', tweetsCount)
       user = {
         ...user.dataValues,
-        FollowersCount: user.Followers.length,
-        FollowingsCount: user.Followings.length,
+        FollowersCount: user.dataValues.length || 0,
+        FollowingsCount: user.dataValues.length || 0,
         isFollower: user.Followers.map((d) => d.id).includes(
           helpers.getUser(req).id
         ),
         tweetsCount: tweetsCount,
       };
+      console.log('@@@@@@@@@@@@')
+      console.log('after', user)
       return callback(user);
     });
   },
