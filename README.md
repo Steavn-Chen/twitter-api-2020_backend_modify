@@ -63,10 +63,7 @@ both user and administrator seed accounts are provided, shown in the table below
 
 ## Author
 
-Chris
-
-Steven
-
-Guanmin
-
-Emery
+- （後端 / backend）[Steavn](https://github.com/Steavn-Chen)
+- （後端 / backend））[Chris](https://github.com/cschang07)
+- （前端 / frontend）[Emery](https://github.com/huangtingyu04)
+- （前端 / frontend））[Guanmin](https://github.com/mingmoth)
