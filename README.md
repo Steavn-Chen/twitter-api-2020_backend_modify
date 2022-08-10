@@ -1,7 +1,7 @@
 # Alphitter
 
 Alphitter is a social media application simulating Twitter
-
+URL:https://steavn-chen.github.io/simple-twitter-front-end/#/signin
 # Feature
  
 With Alphitter, you can do the followings
@@ -17,11 +17,11 @@ With Alphitter, you can do the followings
 
 1. Clone the repository
    ```
-   git clone -b master https://github.com/Steavn-Chen/twitter-api-2020
+   git clone -b master https://github.com/Steavn-Chen/twitter-api-back-end
    ```
 2. Go to the file on your terminal
    ```
-   cd twitter-api-2020
+   cd twitter-api-back-end
    ```
 3. Install the kits
    ```
