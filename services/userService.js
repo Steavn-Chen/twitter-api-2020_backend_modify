@@ -118,21 +118,31 @@ const userService = {
       .catch((err) => console.log(err))
   },
   getUserTweets: (req, res, callback) => {
-    return Tweet.findAll({
-      where: {
-        UserId: Number(req.params.userId)
-      },
-      attributes: { exclude: ['updatedAt'] },
-      order: [['createdAt', 'DESC']],
-      include: [
-        {
-          model: User,
-          attributes: ['id', 'name', 'account', 'avatar']
+    if (req.params.userId === ':userId' || req.params.userId.trim() === '') {
+      return callback({ status: 'error', message: 'Please enter user ID!'})
+    }
+    return Promise.all([
+      Tweet.findAll({
+        where: {
+          UserId: Number(req.params.userId)
         },
-        { model: Reply, attributes: ['id'] },
-        { model: Like, attributes: ['id', 'isLike', 'UserId', 'TweetId'] }
-      ]
-    }).then((tweets) => {
+        attributes: { exclude: ['updatedAt'] },
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'name', 'account', 'avatar']
+          },
+          { model: Reply, attributes: ['id'] },
+          { model: Like, attributes: ['id', 'isLike', 'UserId', 'TweetId'] }
+        ]
+      }),
+      User.findByPk(Number(req.params.userId))
+    ])
+    .then(([tweets, user]) => {
+      if (!user) {
+        return callback({ status: 'error', message: 'no such user!' })
+      }
       if (!tweets) {
         tweets = []
         return callback(tweets)
@@ -149,49 +159,71 @@ const userService = {
       })
       return callback(tweets)
     })
+    .catch(err => console.log(err))
   },
   getUserReplies: (req, res, callback) => {
-    return Reply.findAll({
-      where: {
-        UserId: Number(req.params.userId)
-      },
-      attributes: { exclude: ['updatedAt', 'TweetId'] },
-      order: [['createdAt', 'DESC']],
-      include: [
-        { model: User, attributes: ['id', 'account', 'name', 'avatar'] },
-        {
-          model: Tweet,
-          attributes: ['id'],
-          include: { model: User, attributes: ['id', 'account', 'avatar'] }
-        }
-      ]
-    }).then((tweets) => {
+    if (req.params.userId === ':userId' || req.params.userId.trim() === '') {
+      return callback({ status: 'error', message: 'Please enter user ID!' })
+    }
+    return Promise.all([
+      Reply.findAll({
+        where: {
+          UserId: Number(req.params.userId)
+        },
+        attributes: { exclude: ['updatedAt', 'TweetId'] },
+        order: [['createdAt', 'DESC']],
+        include: [
+          { model: User, attributes: ['id', 'account', 'name', 'avatar'] },
+          {
+            model: Tweet,
+            attributes: ['id'],
+            include: { model: User, attributes: ['id', 'account', 'avatar'] }
+          }
+        ]
+      }),
+      User.findByPk(Number(req.params.userId))
+      ])
+    .then(([tweets, user]) => {
+      if (!user) {
+        return callback({ status: 'error', message: 'no such user!' })
+      }
       if (!tweets) {
         tweets = []
         return callback(tweets)
       }
       return callback(tweets)
     })
+    .catch(err => console.log(err))
   },
   getUserLikes: (req, res, callback) => {
-    return Like.findAll({
-      where: {
-        UserId: Number(req.params.userId)
-      },
-      attributes: { exclude: ['updatedAt', 'UserId'] },
-      order: [['createdAt', 'DESC']],
-      include: [
-        {
-          model: Tweet,
-          attributes: ['id', 'description', 'createdAt'],
-          include: [
-            { model: User, attributes: ['id', 'avatar', 'account', 'name'] },
-            { model: Reply, attributes: ['id'] },
-            { model: Like, attributes: ['id', 'UserId'] }
-          ]
-        }
-      ]
-    }).then((tweets) => {
+    if (req.params.userId === ':userId' || req.params.userId.trim() === '') {
+      return callback({ status: 'error', message: 'Please enter user ID!' })
+    }
+    return Promise.all([    
+      Like.findAll({
+        where: {
+          UserId: Number(req.params.userId)
+        },
+        attributes: { exclude: ['updatedAt', 'UserId'] },
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: Tweet,
+            attributes: ['id', 'description', 'createdAt'],
+            include: [
+              { model: User, attributes: ['id', 'avatar', 'account', 'name'] },
+              { model: Reply, attributes: ['id'] },
+              { model: Like, attributes: ['id', 'UserId'] }
+            ]
+          }
+        ]
+      }),
+      User.findByPk(Number(req.params.userId))
+    ])
+    .then(([tweets, user]) => {
+      if (!user) {
+        return callback({ status: 'error', message: 'no such user!' })
+      }
       if (!tweets) {
         tweets = []
         return callback(tweets)
@@ -208,6 +240,7 @@ const userService = {
       })
       return callback(tweets)
     })
+    .catch(err => console.log(err))
   },
   getFollowers: (req, res, callback) => {
     return Promise.all([
