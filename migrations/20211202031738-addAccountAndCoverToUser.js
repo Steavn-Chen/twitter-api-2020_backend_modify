@@ -1,16 +1,16 @@
-'use strict';
+'use strict'
 
 module.exports = {
-   up: (queryInterface, Sequelize) => {
+  up: (queryInterface, Sequelize) => {
     return queryInterface.addColumn(
-      `Users`,
-      `account`,
+      'Users',
+      'account',
       {
         type: Sequelize.STRING
       })
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.removeColumn(`Users`, `account`)
+    return queryInterface.removeColumn('Users', 'account')
   }
-};
+}

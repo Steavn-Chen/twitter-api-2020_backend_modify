@@ -15,6 +15,6 @@ const tweetController = {
     tweetService.getTweet(req, res, (data) => {
       return res.json(data)
     })
-  },
+  }
 }
 module.exports = tweetController

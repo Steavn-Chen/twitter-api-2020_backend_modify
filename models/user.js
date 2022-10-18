@@ -1,9 +1,4 @@
 'use strict'
-const { datatype } = require('faker')
-const {
-  Model
-} = require('sequelize');
-const tweet = require('./tweet');
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
@@ -15,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     role: DataTypes.STRING,
     account: DataTypes.STRING,
     cover: DataTypes.STRING
-  }, {});
+  }, {})
   User.associate = function (models) {
     User.hasMany(models.Tweet)
     User.hasMany(models.Reply)
@@ -32,5 +27,5 @@ module.exports = (sequelize, DataTypes) => {
     })
   }
 
-  return User;
-};
+  return User
+}

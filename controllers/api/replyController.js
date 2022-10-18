@@ -1,6 +1,6 @@
 const replyService = require('../../services/replyService.js')
 
-let replyController = {
+const replyController = {
   postReply: (req, res) => {
     replyService.postReply(req, res, (data) => {
       return res.json(data)
