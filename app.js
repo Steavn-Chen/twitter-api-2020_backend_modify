@@ -5,6 +5,7 @@ const express = require('express')
 const helpers = require('./_helpers')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
+const cors = require('cors')
 
 const flash = require('connect-flash')
 const session = require('express-session')
@@ -17,7 +18,7 @@ const port = process.env.PORT || 3000
 
 // socket.io
 const server = require('http').Server(app)
-// const io = require('socket.io')(server);
+// const io = require('socket.io')(server)
 
 // for handlebars
 app.engine('handlebars', handlebars({

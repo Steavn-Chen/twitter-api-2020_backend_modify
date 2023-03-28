@@ -13,8 +13,6 @@ const userController = require('../controllers/api/userController')
 const replyController = require('../controllers/api/replyController')
 const adminController = require('../controllers/api/adminController')
 
-// const authenticated = passport.authenticate("jwt", { session: false });
-
 const authenticated = (req, res, next) => {
   passport.authenticate('jwt', { session: false }, (err, user) => {
     if (!user) {
@@ -47,22 +45,6 @@ const authenticatedAdmin = (req, res, next) => {
     return res.json({ status: 'error', message: 'permission denied' })
   }
 }
-// JWT
-// const authenticated = passport.authenticate('jwt', { session: false })
-
-// const authenticatedAdmin = (req, res, next) => {
-//   if (helpers.getUser(req).role === 'user') {
-//     return res.status(401).json({ status: 'error', message: '帳號不存在！' })
-//   }
-//   return next()
-// }
-
-// const authenticatedUser = (req, res, next) => {
-//   if (helpers.getUser(req).role === 'admin') {
-//     return res.status(401).json({ status: 'error', message: '帳號不存在！' })
-//   }
-//   return next()
-// }
 
 // 拿到當下使用者資料
 router.get('/get_current_user', authenticated, userController.getCurrentUser)

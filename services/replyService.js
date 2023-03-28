@@ -6,8 +6,6 @@ const Tweet = db.Tweet
 
 const replyService = {
   postReply: (req, res, callback) => {
-    console.log(req.params)
-    console.log(req.params.tweet_id.trim())
     if (req.params.tweet_id === ':tweet_id' || req.params.tweet_id.trim() === '') {
       return callback({ status: 'error', message: 'Please enter tweet ID!' })
     }
