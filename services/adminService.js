@@ -8,6 +8,9 @@ const sequelize = require('sequelize')
 const adminService = {
   getUsers: (req, res, callback) => {
     return User.findAll({
+      where: {
+        role: "user"
+      },
       raw: true,
       nest: true,
       attributes: [

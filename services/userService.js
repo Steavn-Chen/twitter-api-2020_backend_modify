@@ -315,6 +315,9 @@ const userService = {
   },
   getTopUser: (req, res, callback) => {
     return User.findAll({
+      where: {
+          role: "user"
+      },
       attributes: {
         exclude: ['password', 'email', 'createdAt', 'updatedAt', 'cover', 'introduction']
       },
