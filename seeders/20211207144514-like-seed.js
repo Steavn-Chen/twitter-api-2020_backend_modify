@@ -3,71 +3,71 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('Likes', [{
-      TweetId: 1000,
+      TweetId: 10,
       UserId: 10,
       isLike: true,
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      TweetId: 900,
+      TweetId: 110,
       UserId: 20,
       isLike: true,
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      TweetId: 800,
+      TweetId: 210,
       UserId: 30,
       isLike: true,
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      TweetId: 700,
+      TweetId: 310,
       UserId: 40,
       isLike: true,
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      TweetId: 600,
+      TweetId: 410,
       UserId: 50,
       isLike: true,
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      TweetId: 500,
-      UserId: 60,
-      isLike: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      TweetId: 400,
-      UserId: 70,
-      isLike: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      TweetId: 300,
-      UserId: 80,
-      isLike: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      TweetId: 200,
-      UserId: 90,
+      TweetId: 20,
+      UserId: 10,
       isLike: true,
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
       TweetId: 120,
-      UserId: 10,
+      UserId: 20,
+      isLike: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      TweetId: 220,
+      UserId: 30,
+      isLike: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      TweetId: 320,
+      UserId: 40,
+      isLike: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      TweetId: 420,
+      UserId: 50,
       isLike: true,
       createdAt: new Date(),
       updatedAt: new Date()
