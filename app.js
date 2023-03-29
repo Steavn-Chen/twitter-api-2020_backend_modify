@@ -9,7 +9,6 @@ const cors = require('cors')
 
 const flash = require('connect-flash')
 const session = require('express-session')
-const cors = require('cors')
 const passport = require('./config/passport')
 const handlebars = require('express-handlebars')
 
@@ -17,7 +16,7 @@ const app = express()
 const port = process.env.PORT || 3000
 
 // socket.io
-const server = require('http').Server(app)
+// const server = require('http').Server(app)
 // const io = require('socket.io')(server)
 
 // for handlebars
@@ -47,10 +46,10 @@ app.use((req, res, next) => {
   res.locals.error_messages = req.flash('error_messages')
   res.locals.current_user = req.user // 加這行
   res.locals.user = helpers.getUser(req)
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Credentials', true)
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json')
+  // res.header('Access-Control-Allow-Origin', '*')
+  // res.header('Access-Control-Allow-Credentials', true)
+  // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+  // res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json')
   next()
 })
 
