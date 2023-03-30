@@ -330,7 +330,7 @@ const userService = {
         isFollowed: helpers.getUser(req).Followings ? helpers.getUser(req).Followings.map((d) => d.id).includes(user.id) : false
       }))
       users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
-      users = users.slice(1, 10)
+      users = users.slice(0, 9)
       return callback({ users })
     })
   },
